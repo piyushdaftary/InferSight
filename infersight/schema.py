@@ -16,6 +16,7 @@ SCHEMA_VERSION = "1.0"
 
 class HistogramBuckets(BaseModel):
     """Configurable percentile buckets for latency histograms."""
+
     p50: float = Field(..., description="50th percentile in milliseconds")
     p90: float = Field(..., description="90th percentile in milliseconds")
     p95: float = Field(..., description="95th percentile in milliseconds")
@@ -26,6 +27,7 @@ class HistogramBuckets(BaseModel):
 
 class GPUDeviceMetrics(BaseModel):
     """Per-GPU device metrics."""
+
     device_index: int = Field(..., ge=0)
     compute_utilization_pct: float = Field(..., ge=0, le=100)
     memory_used_bytes: int = Field(..., ge=0)
@@ -38,6 +40,7 @@ class GPUDeviceMetrics(BaseModel):
 
 class KVCacheMetrics(BaseModel):
     """KV cache health metrics (optional — only emitted by supporting engines)."""
+
     hit_rate: float = Field(..., ge=0, le=1, description="Fraction of requests hitting cache")
     miss_rate: float = Field(..., ge=0, le=1)
     eviction_rate: float = Field(..., ge=0, description="Evictions per second")
@@ -54,6 +57,7 @@ class KVCacheMetrics(BaseModel):
 
 class BatchMetrics(BaseModel):
     """Batch efficiency metrics."""
+
     avg_batch_size: float = Field(..., ge=0)
     max_batch_size: int = Field(..., gt=0)
     fill_rate: float = Field(..., ge=0, le=1, description="avg_batch_size / max_batch_size")
@@ -67,6 +71,7 @@ class CanonicalMetric(BaseModel):
     Top-level normalized metric snapshot from a single engine scrape.
     This is the unit of storage and the input to all analyzers.
     """
+
     schema_version: str = Field(default=SCHEMA_VERSION)
     timestamp: datetime
     engine: str = Field(..., description="Engine type, e.g. 'vllm', 'sglang', 'tgi'")
