@@ -30,8 +30,8 @@ COPY --from=builder /build/dist/*.whl ./
 RUN pip install --no-cache-dir *.whl && rm -f *.whl
 
 # Copy pre-built frontend (populated in CI before docker build)
-# Falls back gracefully if ui/dist doesn't exist yet
-COPY ui/dist/ /app/static/ 2>/dev/null || mkdir -p /app/static
+RUN mkdir -p /app/static
+COPY ui/dist/ /app/static/
 
 # Runtime configuration
 ENV INFERSIGHT_VERSION=${INFERSIGHT_VERSION} \

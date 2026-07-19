@@ -86,8 +86,60 @@ InferSight/
 │   └── fixtures/
 ├── docs/                     # Specification documents
 ├── pyproject.toml
-└── pre-commit-config.yaml
+└── .pre-commit-config.yaml
 ```
+
+---
+
+## Pre-commit Hooks
+
+InferSight uses [pre-commit](https://pre-commit.com/) to enforce code quality automatically on every commit. The configuration lives in `.pre-commit-config.yaml` at the repo root.
+
+### Installed hooks
+
+| Hook | Source | What it does |
+|---|---|---|
+| `trailing-whitespace` | pre-commit-hooks | Strips trailing whitespace from all files |
+| `end-of-file-fixer` | pre-commit-hooks | Ensures every file ends with a single newline |
+| `check-yaml` | pre-commit-hooks | Validates YAML syntax (multi-document files allowed) |
+| `check-added-large-files` | pre-commit-hooks | Blocks files larger than 500 KB from being committed |
+| `check-merge-conflict` | pre-commit-hooks | Detects leftover merge-conflict markers |
+| `debug-statements` | pre-commit-hooks | Flags `breakpoint()` / `pdb` calls left in Python files |
+| `check-toml` | pre-commit-hooks | Validates TOML syntax |
+| `ruff` | ruff-pre-commit | Lints and auto-fixes Python code (E, F, I, UP rules) |
+| `ruff-format` | ruff-pre-commit | Formats Python code (replaces Black) |
+| `mypy` | mirrors-mypy | Type-checks the `infersight/` package with strict settings |
+
+### Setup
+
+```bash
+# Install pre-commit into the repo's git hooks (one-time, per clone)
+pre-commit install
+```
+
+After that, hooks run automatically on `git commit`. They only check staged files, so the first run is fast.
+
+### Running hooks manually
+
+```bash
+# Run all hooks against every file in the repo
+pre-commit run --all-files
+
+# Run a single hook
+pre-commit run ruff --all-files
+pre-commit run mypy --all-files
+
+# Update hook versions to the latest revs defined in .pre-commit-config.yaml
+pre-commit autoupdate
+```
+
+### Bypassing hooks (emergency only)
+
+```bash
+git commit --no-verify -m "chore: emergency fix"
+```
+
+Use `--no-verify` only when absolutely necessary (e.g., a CI hotfix where the hook itself is broken). Document why in the commit message.
 
 ---
 
@@ -99,7 +151,7 @@ InferSight/
 - **No `Any` unless unavoidable**: use `TypeVar`, `Generic`, or `Protocol` instead.
 - **Tests required**: every new module needs a corresponding test file under `tests/`.
 
-Pre-commit runs `ruff`, `mypy`, and `pytest` automatically on staged files.
+Pre-commit runs `ruff`, `ruff-format`, and `mypy` automatically on staged files.
 
 ---
 
