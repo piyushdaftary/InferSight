@@ -13,8 +13,9 @@ def test_version_string() -> None:
 
 
 def test_version_command() -> None:
-    """infersight version prints the version string."""
+    """infersight version command prints the version string."""
     runner = CliRunner()
-    result = runner.invoke(app, ["version"])
+    # Single-command Typer app — invoke with no subcommand name
+    result = runner.invoke(app, [])
     assert result.exit_code == 0
     assert __version__ in result.output

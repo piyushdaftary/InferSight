@@ -7,7 +7,6 @@ from infersight import __version__
 app = typer.Typer(
     name="infersight",
     help="The open-source intelligence layer for AI inference infrastructure.",
-    no_args_is_help=True,
 )
 
 
