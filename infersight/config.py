@@ -217,7 +217,7 @@ class InferSightConfig(BaseSettings):
     Sensitive fields use SecretStr and are excluded from model_dump().
     """
 
-    model_config = {  # type: ignore[assignment]
+    model_config = {
         "env_prefix": "INFERSIGHT_",
         "env_nested_delimiter": "__",
         "extra": "ignore",
@@ -274,7 +274,7 @@ class _YamlConfigSource(PydanticBaseSettingsSource):
             if candidate and Path(candidate).exists():
                 with Path(candidate).open() as fh:
                     data = yaml.safe_load(fh) or {}
-                return data  # type: ignore[return-value]
+                return data
         return {}
 
 
