@@ -25,31 +25,33 @@ class Severity(str, Enum):
 
 class Issue(BaseModel):
     """Canonical output of an AnalyzerPlugin."""
-    issue_id: str                          # stable identifier, e.g. "decode_bottleneck"
-    issue_type: str                        # human label
+
+    issue_id: str  # stable identifier, e.g. "decode_bottleneck"
+    issue_type: str  # human label
     severity: Severity
     deployment_id: str
     detected_at: datetime
     cleared_at: datetime | None = None
-    supporting_metrics: dict[str, Any]     # subset of CanonicalMetric fields as evidence
+    supporting_metrics: dict[str, Any]  # subset of CanonicalMetric fields as evidence
     description: str
     plugin_name: str
 
 
 class Recommendation(BaseModel):
     """Canonical output of a RecommenderPlugin."""
+
     rec_id: str
-    issue_id: str                          # links back to the triggering Issue
+    issue_id: str  # links back to the triggering Issue
     deployment_id: str
     plugin_name: str
-    target_parameter: str                  # e.g. "max_num_seqs"
+    target_parameter: str  # e.g. "max_num_seqs"
     current_value: Any  # noqa: ANN401
     recommended_value: Any  # noqa: ANN401
     reasoning: str
-    estimated_impact: str                  # e.g. "15–30% reduction in TTFT"
-    engine_config_snippet: str | None   # native config diff/flag
-    rank: int = 0                          # lower = higher priority
-    status: str = "open"                   # open | acknowledged | applied | dismissed
+    estimated_impact: str  # e.g. "15–30% reduction in TTFT"
+    engine_config_snippet: str | None  # native config diff/flag
+    rank: int = 0  # lower = higher priority
+    status: str = "open"  # open | acknowledged | applied | dismissed
     created_at: datetime
     applied_at: datetime | None = None
 
