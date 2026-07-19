@@ -1,5 +1,8 @@
 """InferSight command-line interface."""
+
 import typer
+
+from infersight import __version__
 
 app = typer.Typer(
     name="infersight",
@@ -11,7 +14,6 @@ app = typer.Typer(
 @app.command()
 def version() -> None:
     """Print the InferSight version."""
-    from infersight import __version__
     typer.echo(f"infersight {__version__}")
 
 
