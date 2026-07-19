@@ -16,7 +16,6 @@ import yaml
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, PydanticBaseSettingsSource
 
-
 # ---------------------------------------------------------------------------
 # Sub-models
 # ---------------------------------------------------------------------------
@@ -134,21 +133,15 @@ class SchedulingInefficiencyConfig(BaseSettings):
 
 
 class AnalyzersConfig(BaseSettings):
-    decode_bottleneck: DecodeBottleneckConfig = Field(
-        default_factory=DecodeBottleneckConfig
-    )
-    batch_efficiency: BatchEfficiencyConfig = Field(
-        default_factory=BatchEfficiencyConfig
-    )
+    decode_bottleneck: DecodeBottleneckConfig = Field(default_factory=DecodeBottleneckConfig)
+    batch_efficiency: BatchEfficiencyConfig = Field(default_factory=BatchEfficiencyConfig)
     gpu_underutilization: GpuUnderutilizationConfig = Field(
         default_factory=GpuUnderutilizationConfig
     )
     memory_fragmentation: MemoryFragmentationConfig = Field(
         default_factory=MemoryFragmentationConfig
     )
-    queue_saturation: QueueSaturationConfig = Field(
-        default_factory=QueueSaturationConfig
-    )
+    queue_saturation: QueueSaturationConfig = Field(default_factory=QueueSaturationConfig)
     kv_cache_effectiveness: KvCacheEffectivenessConfig = Field(
         default_factory=KvCacheEffectivenessConfig
     )
@@ -239,9 +232,7 @@ class InferSightConfig(BaseSettings):
     analyzers: AnalyzersConfig = Field(default_factory=AnalyzersConfig)
     alerting: AlertingConfig = Field(default_factory=AlertingConfig)
     copilot: CopilotConfig = Field(default_factory=CopilotConfig)
-    prometheus: PrometheusExpositionConfig = Field(
-        default_factory=PrometheusExpositionConfig
-    )
+    prometheus: PrometheusExpositionConfig = Field(default_factory=PrometheusExpositionConfig)
     plugins: PluginsConfig = Field(default_factory=PluginsConfig)
 
     @classmethod
@@ -265,7 +256,9 @@ class _YamlConfigSource(PydanticBaseSettingsSource):
     """
 
     def get_field_value(
-        self, field: Any, field_name: str  # noqa: ANN401
+        self,
+        field: Any,
+        field_name: str,  # noqa: ANN401
     ) -> Any:  # noqa: ANN401
         return None, field_name, False
 
@@ -279,7 +272,7 @@ class _YamlConfigSource(PydanticBaseSettingsSource):
         ]
         for candidate in candidates:
             if candidate and Path(candidate).exists():
-                with open(candidate) as fh:
+                with Path(candidate).open() as fh:
                     data = yaml.safe_load(fh) or {}
                 return data  # type: ignore[return-value]
         return {}

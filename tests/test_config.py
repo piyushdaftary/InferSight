@@ -1,7 +1,6 @@
 """Tests for the InferSight config model."""
 
 import os
-import tempfile
 
 import pytest
 import yaml
