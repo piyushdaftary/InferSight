@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import asyncio
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -68,11 +70,15 @@ class SQLiteBackend(StorageBackend):
         self._initialization_lock = asyncio.Lock()
         self._last_cleanup: datetime | None = None
 
-    async def _connect(self) -> aiosqlite.Connection:
+    @asynccontextmanager
+    async def _connection(self) -> AsyncIterator[aiosqlite.Connection]:
         await self._initialize()
         connection = await aiosqlite.connect(self._path)
         connection.row_factory = aiosqlite.Row
-        return connection
+        try:
+            yield connection
+        finally:
+            await connection.close()
 
     async def _initialize(self) -> None:
         if self._initialized:
@@ -98,7 +104,7 @@ class SQLiteBackend(StorageBackend):
     async def cleanup_expired_metrics(self, now: datetime | None = None) -> int:
         """Delete metrics outside the configured retention window and return their count."""
         cutoff = (now or datetime.now(UTC)) - timedelta(days=self._retention_days)
-        async with await self._connect() as connection:
+        async with self._connection() as connection:
             cursor = await connection.execute(
                 "DELETE FROM metrics WHERE captured_at < ?", (cutoff.isoformat(),)
             )
@@ -120,7 +126,7 @@ class SQLiteBackend(StorageBackend):
             )
             for metric in metrics
         ]
-        async with await self._connect() as connection:
+        async with self._connection() as connection:
             await connection.executemany(
                 """INSERT INTO metrics (deployment_id, engine, model_name, captured_at, payload)
                 VALUES (?, ?, ?, ?, ?)""",
@@ -143,7 +149,7 @@ class SQLiteBackend(StorageBackend):
             clauses.append(f"deployment_id IN ({', '.join('?' for _ in deployment_ids)})")
             parameters.extend(deployment_ids)
         parameters.append(limit)
-        async with await self._connect() as connection:
+        async with self._connection() as connection:
             cursor = await connection.execute(
                 f"SELECT payload FROM metrics WHERE {' AND '.join(clauses)} "
                 "ORDER BY captured_at ASC LIMIT ?",
@@ -166,7 +172,7 @@ class SQLiteBackend(StorageBackend):
             )
             for issue in issues
         ]
-        async with await self._connect() as connection:
+        async with self._connection() as connection:
             await connection.executemany(
                 """INSERT OR REPLACE INTO issues
                 (issue_id, deployment_id, detected_at, cleared_at, severity, payload)
@@ -194,7 +200,7 @@ class SQLiteBackend(StorageBackend):
         if active_only:
             clauses.append("cleared_at IS NULL")
         where_clause = f"WHERE {' AND '.join(clauses)}" if clauses else ""
-        async with await self._connect() as connection:
+        async with self._connection() as connection:
             cursor = await connection.execute(
                 f"SELECT payload FROM issues {where_clause} ORDER BY detected_at DESC", parameters
             )
@@ -217,7 +223,7 @@ class SQLiteBackend(StorageBackend):
             )
             for rec in recs
         ]
-        async with await self._connect() as connection:
+        async with self._connection() as connection:
             await connection.executemany(
                 """INSERT OR REPLACE INTO recommendations
                 (rec_id, issue_id, deployment_id, status, rank, created_at, applied_at, payload)
@@ -227,7 +233,7 @@ class SQLiteBackend(StorageBackend):
             await connection.commit()
 
     async def update_recommendation(self, rec_id: str, status: str) -> Recommendation:
-        async with await self._connect() as connection:
+        async with self._connection() as connection:
             cursor = await connection.execute(
                 "SELECT payload FROM recommendations WHERE rec_id = ?", (rec_id,)
             )
@@ -266,7 +272,7 @@ class SQLiteBackend(StorageBackend):
             clauses.append(f"status IN ({', '.join('?' for _ in status)})")
             parameters.extend(status)
         where_clause = f"WHERE {' AND '.join(clauses)}" if clauses else ""
-        async with await self._connect() as connection:
+        async with self._connection() as connection:
             cursor = await connection.execute(
                 f"""SELECT payload FROM recommendations {where_clause}
                 ORDER BY rank ASC, created_at DESC""",
@@ -276,7 +282,7 @@ class SQLiteBackend(StorageBackend):
         return [Recommendation.model_validate_json(row["payload"]) for row in rows]
 
     async def write_copilot_message(self, session_id: str, role: str, content: str) -> None:
-        async with await self._connect() as connection:
+        async with self._connection() as connection:
             await connection.execute(
                 """INSERT INTO copilot_history (session_id, role, content, created_at)
                 VALUES (?, ?, ?, ?)""",
@@ -289,7 +295,7 @@ class SQLiteBackend(StorageBackend):
         session_id: str,
         limit: int = 100,
     ) -> list[dict[str, str]]:
-        async with await self._connect() as connection:
+        async with self._connection() as connection:
             cursor = await connection.execute(
                 """SELECT role, content FROM copilot_history WHERE session_id = ?
                 ORDER BY id DESC LIMIT ?""",
