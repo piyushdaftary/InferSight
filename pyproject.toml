@@ -95,10 +95,12 @@ ignore_missing_imports = false
 [[tool.mypy.overrides]]
 module = [
   "apscheduler.*",
+  "aiosqlite.*",
   "litellm.*",
   "hcl2.*",
   "prometheus_client.*",
   "jose.*",
+  "tomli.*",
 ]
 ignore_missing_imports = true
 
