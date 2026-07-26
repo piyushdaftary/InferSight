@@ -9,12 +9,14 @@ from infersight.plugins.base import (
     RecommenderPlugin,
     Severity,
 )
+from infersight.plugins.registry import PluginRegistry
 
 __all__ = [
     "CollectorPlugin",
     "AnalyzerPlugin",
     "RecommenderPlugin",
     "NotificationPlugin",
+    "PluginRegistry",
     "Severity",
     "Issue",
     "Recommendation",

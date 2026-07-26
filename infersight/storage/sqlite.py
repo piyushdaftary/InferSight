@@ -296,4 +296,4 @@ class SQLiteBackend(StorageBackend):
                 (session_id, limit),
             )
             rows = await cursor.fetchall()
-        return [{"role": row["role"], "content": row["content"]} for row in reversed(rows)]
+        return [{"role": row["role"], "content": row["content"]} for row in reversed(list(rows))]
