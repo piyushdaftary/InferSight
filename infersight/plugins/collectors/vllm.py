@@ -18,6 +18,8 @@ _LABEL = re.compile(r'(\w+)="([^"]*)"')
 class VLLMCollector(CollectorPlugin):
     """Collect vLLM server metrics and normalize them into a metric snapshot."""
 
+    metric_prefix = "vllm:"
+
     def __init__(self, endpoint: str, deployment_id: str, timeout_seconds: int = 10) -> None:
         self._endpoint = endpoint.rstrip("/")
         self._deployment_id = deployment_id
@@ -45,34 +47,37 @@ class VLLMCollector(CollectorPlugin):
             raise CollectionError(f"Could not collect vLLM metrics: {exc}") from exc
         values, labels = _parse_metrics(response.text)
         now = datetime.now(UTC)
-        generated = values.get("vllm:generation_tokens_total", 0.0)
-        requests = values.get("vllm:request_success_total", 0.0)
+        generated = values.get(self._metric("generation_tokens_total"), 0.0)
+        requests = values.get(self._metric("request_success_total"), 0.0)
         decode_tps, request_rps = self._rates(now, generated, requests)
         model_name = labels.get("model_name", "unknown")
-        hits = values.get("vllm:prefix_cache_hits", 0.0)
-        queries = values.get("vllm:prefix_cache_queries", 0.0)
+        hits = values.get(self._metric("prefix_cache_hits"), 0.0)
+        queries = values.get(self._metric("prefix_cache_queries"), 0.0)
         return CanonicalMetric(
             timestamp=now,
-            engine="vllm",
+            engine=self.engine_name,
             deployment_id=self._deployment_id,
             model_name=model_name,
-            ttft_ms=_histogram(values, "vllm:time_to_first_token_seconds"),
-            inter_token_latency_ms=_histogram(values, "vllm:inter_token_latency_seconds"),
-            queue_wait_ms=_histogram(values, "vllm:request_queue_time_seconds"),
+            ttft_ms=_histogram(values, self._metric("time_to_first_token_seconds")),
+            inter_token_latency_ms=_histogram(values, self._metric("inter_token_latency_seconds")),
+            queue_wait_ms=_histogram(values, self._metric("request_queue_time_seconds")),
             decode_throughput_tps=decode_tps,
             request_throughput_rps=request_rps,
-            queue_depth=int(values.get("vllm:num_requests_waiting", 0)),
+            queue_depth=int(values.get(self._metric("num_requests_waiting"), 0)),
             kv_cache=KVCacheMetrics(
                 hit_rate=hits / queries if queries else 0,
                 miss_rate=1 - hits / queries if queries else 1,
                 eviction_rate=0,
-                used_blocks=int(values.get("vllm:kv_cache_usage_perc", 0) * 100),
+                used_blocks=int(values.get(self._metric("kv_cache_usage_perc"), 0) * 100),
                 total_blocks=100,
                 prefix_caching_enabled=queries > 0,
             )
-            if "vllm:kv_cache_usage_perc" in values
+            if self._metric("kv_cache_usage_perc") in values
             else None,
         )
+
+    def _metric(self, name: str) -> str:
+        return f"{self.metric_prefix}{name}"
 
     def _rates(self, now: datetime, generated: float, requests: float) -> tuple[float, float]:
         previous = self._previous
