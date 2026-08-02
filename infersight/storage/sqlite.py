@@ -27,7 +27,9 @@ class SQLiteBackend(StorageBackend):
     Thread-safe for concurrent writes via connection pooling.
     """
 
-    def __init__(self, db_path: str = "~/.infersight/infersight.db", retention_days: int = 30) -> None:
+    def __init__(
+        self, db_path: str = "~/.infersight/infersight.db", retention_days: int = 30
+    ) -> None:
         """Initialize SQLiteBackend with database path and retention policy.
 
         Args:
