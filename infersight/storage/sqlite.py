@@ -151,14 +151,13 @@ class SQLiteBackend(StorageBackend):
         Args:
             metrics: List of CanonicalMetric snapshots to write.
         """
-        datetime.utcnow().isoformat()
         rows = [
             (
                 m.deployment_id,
                 m.engine,
                 m.model_name,
                 m.timestamp.isoformat(),
-                json.dumps(m.model_dump()),
+                json.dumps(m.model_dump(mode="json")),
             )
             for m in metrics
         ]
@@ -226,7 +225,7 @@ class SQLiteBackend(StorageBackend):
                 i.detected_at.isoformat(),
                 i.cleared_at.isoformat() if i.cleared_at else None,
                 i.severity.value,
-                json.dumps(i.model_dump()),
+                json.dumps(i.model_dump(mode="json")),
             )
             for i in issues
         ]
@@ -301,7 +300,7 @@ class SQLiteBackend(StorageBackend):
                 r.rank,
                 r.created_at.isoformat(),
                 r.applied_at.isoformat() if r.applied_at else None,
-                json.dumps(r.model_dump()),
+                json.dumps(r.model_dump(mode="json")),
             )
             for r in recs
         ]
