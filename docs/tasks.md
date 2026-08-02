@@ -52,30 +52,32 @@
 
 ---
 
-## Phase 1 — Core Infrastructure
+# Phase 1 — Core Infrastructure (In Progress)
 
-### Task 1.1 — Config Model (`infersight/config.py`)
+### Task 1.1 — Config Model (`infersight/config.py`) ✅ COMPLETE
 - Implement `InferSightConfig` using Pydantic Settings v2 with `INFERSIGHT_` env-variable prefix and YAML file loading
 - Cover all top-level sections from design §11: `server`, `collection`, `storage`, `auth`, `http`, `deployments`, `plugin_dirs`, `analyzers`, `alerting`, `copilot`, `grafana`, `prometheus`
 - Sensitive fields (`api_key`, `smtp_password`, `routing_key`) must not appear in `model_dump()` output by default (use `exclude` or `SecretStr`)
 - **Complexity:** M
 - _Requirements: REQ-7.1.3, REQ-7.2.4_
+- **Status:** Complete. Full YAML + env var loading with 5 passing unit tests.
 
-### Task 1.2 — StorageBackend ABC (`infersight/storage/base.py`)
+### Task 1.2 — StorageBackend ABC (`infersight/storage/base.py`) ✅ COMPLETE
 - Define the abstract `StorageBackend` class with all seven abstract methods from design §6.1: `write_metrics`, `query_metrics`, `write_issues`, `query_issues`, `write_recommendations`, `update_recommendation`, `query_recommendations`
 - All methods must be `async`; type signatures must use the canonical models
 - Add a `write_copilot_message` / `query_copilot_history` pair to support the `copilot_history` table
 - **Complexity:** S
 - _Requirements: REQ-1.4.1, REQ-3.3.1_
+- **Status:** Complete. StorageBackend ABC with all methods defined.
 
-### Task 1.3 — SQLite Storage Backend (`infersight/storage/sqlite.py`)
+### Task 1.3 — SQLite Storage Backend (`infersight/storage/sqlite.py`) ⏳ PENDING
 - Implement `SQLiteBackend(StorageBackend)` using Python's stdlib `sqlite3` (via `aiosqlite` for async)
 - Create all four tables from design §6.2 DDL on first connection: `metrics`, `issues`, `recommendations`, `copilot_history`; create all specified indexes
 - Implement a daily TTL cleanup job that deletes metrics rows older than `retention_days`
 - **Complexity:** M
 - _Requirements: REQ-1.4.1, REQ-1.4.2, REQ-3.3.1_
 
-### Task 1.4 — Plugin Registry (`infersight/plugins/registry.py`)
+### Task 1.4 — Plugin Registry (`infersight/plugins/registry.py`) ⏳ PENDING
 - Implement `PluginRegistry` that scans directories listed in `config.plugin_dirs` using `importlib` and auto-discovers subclasses of `CollectorPlugin`, `AnalyzerPlugin`, `RecommenderPlugin`, and `NotificationPlugin`
 - A plugin that raises during `__init__` must be isolated — log the error, skip the plugin, continue loading others
 - Expose `registry.collectors`, `registry.analyzers`, `registry.recommenders`, `registry.notifiers` typed lists
