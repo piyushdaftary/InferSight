@@ -51,7 +51,8 @@ class SQLiteBackend(StorageBackend):
         """Get or create thread-local database connection."""
         if not hasattr(self._local, "connection") or self._local.connection is None:
             raise RuntimeError("Connection not initialized. Use async context manager.")
-        return self._local.connection  # type: ignore[return-value]
+        assert isinstance(self._local.connection, aiosqlite.Connection)
+        return self._local.connection
 
     async def __aenter__(self) -> SQLiteBackend:
         """Async context manager entry - open connection."""
