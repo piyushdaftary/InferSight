@@ -9,7 +9,7 @@ This roadmap reflects the current planning horizon. Dates are targets, not commi
 **Goal**: Runnable skeleton with the first working collector and end-to-end analysis pipeline.
 
 - [x] Phase 0: Project scaffolding (pyproject.toml, package structure, CI)
-- [x] Phase 1: Core infrastructure (Config model ✅, StorageBackend ABC ✅, Plugin interfaces ✅)
+- [x] Phase 1: Core infrastructure (Config model ✅, StorageBackend ABC ✅, SQLite backend ✅)
 - [x] Phase 2: Canonical metric schema (`EngineSnapshot`, `Issue`, `Recommendation`)
 - [x] Phase 3: vLLM collector (pull-based, `/metrics` endpoint)
 - [ ] Phase 4: First 3 analyzer detectors (GPU utilization, KV cache hit rate, queue depth)

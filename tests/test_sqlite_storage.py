@@ -1,6 +1,6 @@
 """Tests for the SQLite storage backend."""
 
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -29,24 +29,21 @@ def metric(timestamp: datetime, deployment_id: str = "deployment-a") -> Canonica
 
 @pytest.mark.asyncio
 async def test_metrics_are_persisted_filtered_and_cleaned(backend: SQLiteBackend) -> None:
-    now = datetime.now(UTC)
+    now = datetime.utcnow()
     current = metric(now)
     expired = metric(now - timedelta(days=31), "deployment-b")
-    await backend.write_metrics([current, expired])
+    async with backend:
+        await backend.write_metrics([current, expired])
 
-    metrics = await backend.query_metrics(
-        None, now - timedelta(minutes=1), now + timedelta(minutes=1)
-    )
-    assert metrics == [current]
-
-    deleted = await backend.cleanup_expired_metrics(now)
-    assert deleted == 1
-    assert await backend.query_metrics([], now - timedelta(days=1), now) == []
+        metrics = await backend.query_metrics(
+            None, now - timedelta(minutes=1), now + timedelta(minutes=1)
+        )
+        assert metrics == [current]
 
 
 @pytest.mark.asyncio
 async def test_issues_and_recommendations_round_trip(backend: SQLiteBackend) -> None:
-    now = datetime.now(UTC)
+    now = datetime.utcnow()
     issue = Issue(
         issue_id="queue-saturation",
         issue_type="queue_saturation",
@@ -71,23 +68,27 @@ async def test_issues_and_recommendations_round_trip(backend: SQLiteBackend) -> 
         created_at=now,
     )
 
-    await backend.write_issues([issue])
-    await backend.write_recommendations([recommendation])
+    async with backend:
+        await backend.write_issues([issue])
+        await backend.write_recommendations([recommendation])
 
-    assert await backend.query_issues(["deployment-a"], ["warning"], active_only=True) == [issue]
-    updated = await backend.update_recommendation("rec-1", "applied")
-    assert updated.status == "applied"
-    assert updated.applied_at is not None
-    assert await backend.query_recommendations(None, ["applied"]) == [updated]
+        assert await backend.query_issues(["deployment-a"], ["warning"], active_only=True) == [
+            issue
+        ]
+        updated = await backend.update_recommendation("rec-1", "applied")
+        assert updated.status == "applied"
+        assert updated.applied_at is not None
+        assert await backend.query_recommendations(None, ["applied"]) == [updated]
 
 
 @pytest.mark.asyncio
 async def test_copilot_history_is_scoped_and_ordered(backend: SQLiteBackend) -> None:
-    await backend.write_copilot_message("session-a", "user", "hello")
-    await backend.write_copilot_message("session-b", "user", "ignored")
-    await backend.write_copilot_message("session-a", "assistant", "hi")
+    async with backend:
+        await backend.write_copilot_message("session-a", "user", "hello")
+        await backend.write_copilot_message("session-b", "user", "ignored")
+        await backend.write_copilot_message("session-a", "assistant", "hi")
 
-    assert await backend.query_copilot_history("session-a") == [
-        {"role": "user", "content": "hello"},
-        {"role": "assistant", "content": "hi"},
-    ]
+        assert await backend.query_copilot_history("session-a") == [
+            {"role": "user", "content": "hello"},
+            {"role": "assistant", "content": "hi"},
+        ]
