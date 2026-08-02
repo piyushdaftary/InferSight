@@ -8,10 +8,10 @@ This roadmap reflects the current planning horizon. Dates are targets, not commi
 
 **Goal**: Runnable skeleton with the first working collector and end-to-end analysis pipeline.
 
-- [ ] Phase 0: Project scaffolding (pyproject.toml, package structure, CI)
-- [ ] Phase 1: Plugin framework (CollectorPlugin ABC, AnalyzerPlugin ABC, registry)
-- [ ] Phase 2: Canonical metric schema (`EngineSnapshot`, `Issue`, `Recommendation`)
-- [ ] Phase 3: vLLM collector (pull-based, `/metrics` endpoint)
+- [x] Phase 0: Project scaffolding (pyproject.toml, package structure, CI)
+- [x] Phase 1: Core infrastructure (Config model ✅, StorageBackend ABC ✅, Plugin interfaces ✅)
+- [x] Phase 2: Canonical metric schema (`EngineSnapshot`, `Issue`, `Recommendation`)
+- [x] Phase 3: vLLM collector (pull-based, `/metrics` endpoint)
 - [ ] Phase 4: First 3 analyzer detectors (GPU utilization, KV cache hit rate, queue depth)
 - [ ] Phase 5: CLI (`infersight analyze`) with JSON and human-readable output
 - [ ] Basic test suite (unit + integration against a mock vLLM server)
