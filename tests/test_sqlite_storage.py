@@ -72,7 +72,9 @@ async def test_issues_and_recommendations_round_trip(backend: SQLiteBackend) -> 
         await backend.write_issues([issue])
         await backend.write_recommendations([recommendation])
 
-        assert await backend.query_issues(["deployment-a"], ["warning"], active_only=True) == [issue]
+        assert await backend.query_issues(["deployment-a"], ["warning"], active_only=True) == [
+            issue
+        ]
         updated = await backend.update_recommendation("rec-1", "applied")
         assert updated.status == "applied"
         assert updated.applied_at is not None
