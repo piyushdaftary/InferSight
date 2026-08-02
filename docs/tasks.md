@@ -70,12 +70,13 @@
 - _Requirements: REQ-1.4.1, REQ-3.3.1_
 - **Status:** Complete. StorageBackend ABC with all methods defined.
 
-### Task 1.3 — SQLite Storage Backend (`infersight/storage/sqlite.py`) ⏳ PENDING
+### Task 1.3 — SQLite Storage Backend (`infersight/storage/sqlite.py`) ✅ COMPLETE
 - Implement `SQLiteBackend(StorageBackend)` using Python's stdlib `sqlite3` (via `aiosqlite` for async)
 - Create all four tables from design §6.2 DDL on first connection: `metrics`, `issues`, `recommendations`, `copilot_history`; create all specified indexes
 - Implement a daily TTL cleanup job that deletes metrics rows older than `retention_days`
 - **Complexity:** M
 - _Requirements: REQ-1.4.1, REQ-1.4.2, REQ-3.3.1_
+- **Status:** Complete. Full SQLite backend with async context manager, all CRUD operations, TTL cleanup.
 
 ### Task 1.4 — Plugin Registry (`infersight/plugins/registry.py`) ⏳ PENDING
 - Implement `PluginRegistry` that scans directories listed in `config.plugin_dirs` using `importlib` and auto-discovers subclasses of `CollectorPlugin`, `AnalyzerPlugin`, `RecommenderPlugin`, and `NotificationPlugin`
