@@ -141,12 +141,13 @@
 - **Complexity:** M
 - _Requirements: REQ-1.1.1_
 
-### Task 2.4 — NVIDIA Triton Collector (`collectors/triton.py`)
+### Task 2.4 — NVIDIA Triton Collector (`collectors/triton.py`) ✅ COMPLETE
 - Query Triton's HTTP statistics endpoint (`/v2/models/stats`) and Prometheus metrics to populate `CanonicalMetric`
 - Map per-model throughput, queue depth, and GPU metrics from Triton's response format
 - Return `engine_name = "triton"`; handle multi-model Triton instances by aggregating or per-model `deployment_id`
 - **Complexity:** M
 - _Requirements: REQ-1.1.1_
+- **Status:** Complete. Aggregates Triton model statistics, queue depth, and exposed GPU gauges.
 
 ### Task 2.5 — KServe Collector (`collectors/kserve.py`)
 - Query KServe's model metadata and Prometheus sidecar metrics to build `CanonicalMetric`
