@@ -57,7 +57,7 @@ This roadmap reflects the current planning horizon. Dates are targets, not commi
 - [ ] Recommendation panel with one-click config snippet copy
 - [ ] Infra Advisor results view
 - [ ] Dark mode and responsive layout
-- [ ] NVIDIA Triton collector
+- [x] NVIDIA Triton collector
 - [ ] KServe collector
 
 ---
