@@ -9,7 +9,7 @@ KServe model servers and the Knative queue-proxy sidecar.
 from __future__ import annotations
 
 import asyncio
-from datetime import UTC, datetime
+from datetime import datetime
 from typing import Any
 
 import httpx
@@ -70,7 +70,7 @@ class KServeCollector(CollectorPlugin):
             raise CollectionError(f"Could not collect KServe metrics: {exc}") from exc
 
         values, labels = _parse_metrics(metrics_response.text)
-        now = datetime.now(UTC)
+        now = datetime.utcnow()
         requests = _first_value(values, _REQUEST_COUNTERS)
         return CanonicalMetric(
             timestamp=now,
