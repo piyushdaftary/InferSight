@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from datetime import UTC, datetime
+from datetime import datetime
 
 import httpx
 
@@ -46,7 +46,7 @@ class VLLMCollector(CollectorPlugin):
         except httpx.HTTPError as exc:
             raise CollectionError(f"Could not collect vLLM metrics: {exc}") from exc
         values, labels = _parse_metrics(response.text)
-        now = datetime.now(UTC)
+        now = datetime.utcnow()
         generated = values.get(self._metric("generation_tokens_total"), 0.0)
         requests = values.get(self._metric("request_success_total"), 0.0)
         decode_tps, request_rps = self._rates(now, generated, requests)

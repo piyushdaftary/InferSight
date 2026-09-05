@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import re
-from datetime import UTC, datetime
+from datetime import datetime
 from typing import Any
 
 import httpx
@@ -54,7 +54,7 @@ class TritonCollector(CollectorPlugin):
             raise CollectionError(f"Could not collect Triton metrics: {exc}") from exc
 
         model_stats = _model_stats(stats_response.json())
-        now = datetime.now(UTC)
+        now = datetime.utcnow()
         total_requests = sum(_count(stat, "success") for stat in model_stats)
         errors = sum(_count(stat, "fail") for stat in model_stats)
         request_rps = self._request_rate(now, total_requests)
