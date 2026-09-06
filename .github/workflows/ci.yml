@@ -22,8 +22,11 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
 
+      - name: Clear pip cache
+        run: pip cache purge
+
       - name: Install dev dependencies
-        run: pip install -e ".[dev]"
+        run: pip install --no-cache-dir --upgrade -e ".[dev]"
 
       - name: Run ruff
         run: ruff check . --output-format=github
@@ -47,8 +50,11 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
 
+      - name: Clear pip cache
+        run: pip cache purge
+
       - name: Install dependencies
-        run: pip install -e ".[dev]"
+        run: pip install --no-cache-dir --upgrade -e ".[dev]"
 
       - name: Run tests
         run: pytest --cov=infersight --cov-report=xml

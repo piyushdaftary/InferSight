@@ -149,12 +149,13 @@
 - _Requirements: REQ-1.1.1_
 - **Status:** Complete. Aggregates Triton model statistics, queue depth, and exposed GPU gauges.
 
-### Task 2.5 — KServe Collector (`collectors/kserve.py`)
+### Task 2.5 — KServe Collector (`collectors/kserve.py`) ✅ COMPLETE
 - Query KServe's model metadata and Prometheus sidecar metrics to build `CanonicalMetric`
 - Map KServe InferenceService-level metrics: request latency, throughput, and queue depth
 - Return `engine_name = "kserve"`; support both v1 and v2 inference protocol endpoints
 - **Complexity:** M
 - _Requirements: REQ-1.1.1_
+- **Status:** Complete. Supports KServe V1/V2 metadata APIs and normalizes sidecar metrics.
 
 ### Task 2.6 — Amazon SageMaker HyperPod Collector (`collectors/hyperpod.py`)
 - Collect metrics from SageMaker HyperPod via CloudWatch API or the HyperPod monitoring endpoint using `boto3`/`httpx`
