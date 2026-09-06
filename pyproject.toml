@@ -29,7 +29,7 @@ dependencies = [
   "pydantic-settings>=2.14.1",
   "httpx>=0.28.0",
   "apscheduler==3.10.4",
-  "litellm==1.100.0",
+  "litellm>=1.80.0",
   "structlog==24.2.0",
   "typer==0.12.3",
   "aiosqlite==0.20.0",
