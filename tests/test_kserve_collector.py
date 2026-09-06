@@ -43,7 +43,9 @@ async def test_collects_metrics_and_v2_model_metadata(monkeypatch: pytest.Monkey
     client = FakeClient(
         {
             "metrics": response(200, f"{endpoint}/metrics", text=METRICS),
-            f"{endpoint}/v2/models/iris": response(200, f"{endpoint}/v2/models/iris", json={"name": "iris"}),
+            f"{endpoint}/v2/models/iris": response(
+                200, f"{endpoint}/v2/models/iris", json={"name": "iris"}
+            ),
         }
     )
     monkeypatch.setattr(
@@ -67,7 +69,9 @@ async def test_uses_v1_metadata_when_v2_is_unavailable(monkeypatch: pytest.Monke
         {
             "metrics": response(200, f"{endpoint}/metrics", text=METRICS),
             f"{endpoint}/v2": response(404, f"{endpoint}/v2"),
-            f"{endpoint}/v1/models": response(200, f"{endpoint}/v1/models", json={"models": ["iris"]}),
+            f"{endpoint}/v1/models": response(
+                200, f"{endpoint}/v1/models", json={"models": ["iris"]}
+            ),
         }
     )
     monkeypatch.setattr(

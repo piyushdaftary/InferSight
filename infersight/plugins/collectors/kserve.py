@@ -132,7 +132,5 @@ def _first_value(values: dict[str, float], names: tuple[str, ...]) -> float:
     return next((values[name] for name in names if name in values), 0.0)
 
 
-def _first_histogram(
-    values: dict[str, float], names: tuple[str, ...]
-) -> HistogramBuckets | None:
+def _first_histogram(values: dict[str, float], names: tuple[str, ...]) -> HistogramBuckets | None:
     return next((histogram for name in names if (histogram := _histogram(values, name))), None)
