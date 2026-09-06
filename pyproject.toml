@@ -37,6 +37,7 @@ dependencies = [
   "python-hcl2==4.3.2",
   "prometheus-client==0.20.0",
   "python-multipart==0.0.9",
+  "aiosmtplib>=3.0.0",
   "python-jose[cryptography]==3.3.0",
 ]
 
@@ -100,6 +101,7 @@ module = [
   "prometheus_client.*",
   "jose.*",
   "tomli.*",
+  "aiosmtplib.*",
 ]
 ignore_missing_imports = true
 
