@@ -22,6 +22,9 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
 
+      - name: Clear pip cache
+        run: pip cache purge
+
       - name: Install dev dependencies
         run: pip install -e ".[dev]"
 
@@ -46,6 +49,9 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
+
+      - name: Clear pip cache
+        run: pip cache purge
 
       - name: Install dependencies
         run: pip install -e ".[dev]"
