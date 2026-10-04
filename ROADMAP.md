@@ -12,9 +12,9 @@ This roadmap reflects the current planning horizon. Dates are targets, not commi
 - [x] Phase 1: Core infrastructure (Config model ✅, StorageBackend ABC ✅, SQLite backend ✅)
 - [x] Phase 2: Canonical metric schema (`EngineSnapshot`, `Issue`, `Recommendation`)
 - [x] Phase 3: vLLM collector (pull-based, `/metrics` endpoint)
-- [ ] Phase 4: First 3 analyzer detectors (GPU utilization, KV cache hit rate, queue depth)
+- [x] Phase 4: Analyzer detectors (7 implemented)
 - [ ] Phase 5: CLI (`infersight analyze`) with JSON and human-readable output
-- [ ] Basic test suite (unit + integration against a mock vLLM server)
+- [x] Basic test suite (unit + mock end-to-end pipeline)
 
 **Definition of done**: `infersight analyze --engine vllm --endpoint localhost:8000` produces a health score, issues, and recommendations.
 
@@ -24,13 +24,13 @@ This roadmap reflects the current planning horizon. Dates are targets, not commi
 
 **Goal**: Multi-engine support and persistent metric storage.
 
-- [ ] SGLang collector
-- [ ] HuggingFace TGI collector
-- [ ] Remaining 4 analyzer detectors (TTFT, throughput, error rate, memory pressure)
-- [ ] Storage backends: SQLite (default) and Prometheus remote write
+- [x] SGLang collector
+- [x] HuggingFace TGI collector
+- [x] Analyzer detectors (7 implemented)
+- [ ] Prometheus remote-write storage backend (SQLite default is implemented)
 - [ ] Grafana dashboard JSON export
-- [ ] Scheduled collection with configurable intervals
-- [ ] Alerting: Slack and PagerDuty webhooks
+- [x] Scheduled collection with configurable intervals
+- [x] Alerting: Slack and PagerDuty webhooks
 
 ---
 
@@ -38,8 +38,8 @@ This roadmap reflects the current planning horizon. Dates are targets, not commi
 
 **Goal**: Ranked recommendations and static infrastructure analysis.
 
-- [ ] Recommendation engine with impact estimates
-- [ ] Engine-native config snippet generation (vLLM flags, SGLang args)
+- [x] Recommendation engine with ranked engine-aware guidance
+- [x] Engine-native configuration snippet generation
 - [ ] Infrastructure Advisor: Kubernetes manifest analysis
 - [ ] Infrastructure Advisor: Helm values analysis
 - [ ] Infrastructure Advisor: Terraform plan analysis
@@ -103,4 +103,4 @@ If you want to build something from the wishlist, open an issue first to coordin
 
 ---
 
-*Last updated: 2025. Roadmap is subject to change based on community feedback and contributor availability.*
+*Last updated: 2026. Roadmap is subject to change based on community feedback and contributor availability.*

@@ -2,7 +2,7 @@
 
 > The open-source intelligence layer for AI inference infrastructure.
 
-🚧 **Early Development** — Architecture complete, implementation underway.
+🚧 **Active Development** — Core collection, analysis, recommendations, storage, and notifications are implemented. API, dashboard, Kubernetes deployment, advisor, and copilot work remain.
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://python.org)
@@ -79,9 +79,10 @@ Estimated Improvement
 
 | Phase | Capability | Status |
 |-------|-----------|--------|
-| 📊 Observability | Unified metrics from 7 engines; Prometheus & Grafana export | ⏳ Planned |
-| 🔍 Analysis | 7 automated issue detectors with configurable thresholds | ⏳ Planned |
-| 💡 Recommendations | Ranked guidance with impact estimates & engine-native config snippets | ⏳ Planned |
+| 📊 Observability | Unified metrics from vLLM, SGLang, TGI, Triton, and KServe; SQLite persistence | 🟡 In progress |
+| 🔍 Analysis | 7 automated issue detectors with configurable thresholds | ✅ Implemented |
+| 💡 Recommendations | Ranked engine-aware guidance with configuration snippets | ✅ Implemented |
+| 🔔 Notifications | Slack, PagerDuty, and SMTP email alert delivery with deduplication | ✅ Implemented |
 | 🏗️ Infra Advisor | Static analysis of K8s, Helm, Terraform, Ray configs — CI/CD ready | ⏳ Planned |
 | 🤖 AI Copilot | Conversational troubleshooting grounded in inference telemetry and operational context | ⏳ Planned |
 
@@ -95,16 +96,19 @@ Estimated Improvement
 |-----------|--------|
 | Specification | ✅ Complete |
 | Architecture | ✅ Complete |
-| Plugin Framework | ⏳ Planned |
-| vLLM Collector | ⏳ Planned |
-| SGLang Collector | ⏳ Planned |
-| Analyzer Engine (7 detectors) | ⏳ Planned |
-| Recommendation Engine | ⏳ Planned |
+| Plugin Framework, Canonical Schema, and SQLite Storage | ✅ Implemented |
+| Scheduled Collection and Mock End-to-End Pipeline | ✅ Implemented |
+| Collectors: vLLM, SGLang, TGI, Triton, and KServe | ✅ Implemented |
+| Collectors: HyperPod and Ray Serve | ⏳ Remaining |
+| Analyzer Engine (7 detectors) | ✅ Implemented |
+| Recommendation Engine (7 recommenders) | ✅ Implemented |
+| Alerting: Slack, PagerDuty, and Email | ✅ Implemented |
+| REST API and WebSockets | 🟡 In progress |
 | Infrastructure Advisor | ⏳ Planned |
-| React Dashboard | ⏳ Planned |
+| React Dashboard | 🟡 Initial scaffold only |
 | AI Copilot | ⏳ Planned |
 
-InferSight is in active development. The spec and architecture are complete; implementation begins with Phase 0 scaffolding. See [tasks.md](docs/tasks.md) for the full implementation plan.
+InferSight is in active development. The core backend pipeline is validated with mocked end-to-end tests; production Kubernetes validation and the remaining product surfaces are still pending. See [tasks.md](docs/tasks.md) for the full implementation plan.
 
 ---
 
@@ -112,11 +116,11 @@ InferSight is in active development. The spec and architecture are complete; imp
 
 | Engine | Status |
 |--------|--------|
-| [vLLM](https://github.com/vllm-project/vllm) | ⏳ Planned |
-| [SGLang](https://github.com/sgl-project/sglang) | ⏳ Planned |
-| [HuggingFace TGI](https://github.com/huggingface/text-generation-inference) | ⏳ Planned |
-| [NVIDIA Triton](https://github.com/triton-inference-server/server) | ⏳ Planned |
-| [KServe](https://github.com/kserve/kserve) | ⏳ Planned |
+| [vLLM](https://github.com/vllm-project/vllm) | ✅ Implemented |
+| [SGLang](https://github.com/sgl-project/sglang) | ✅ Implemented |
+| [HuggingFace TGI](https://github.com/huggingface/text-generation-inference) | ✅ Implemented |
+| [NVIDIA Triton](https://github.com/triton-inference-server/server) | ✅ Implemented |
+| [KServe](https://github.com/kserve/kserve) | ✅ Implemented |
 | [Amazon SageMaker HyperPod](https://aws.amazon.com/sagemaker/hyperpod/) | ⏳ Planned |
 | [Ray Serve](https://docs.ray.io/en/latest/serve/index.html) | ⏳ Planned |
 
@@ -170,8 +174,7 @@ Dashboard             AI Copilot
 
 ## Quick Start
 
-> InferSight is not yet installable — implementation is in progress.
-> The steps below reflect the intended UX once Phase 1 ships.
+> InferSight can be installed from this repository for development. The `serve` CLI, public REST API, and dashboard workflow below are still in progress.
 
 ```bash
 pip install infersight
