@@ -70,3 +70,19 @@ class StorageBackend(ABC):
         limit: int = 100,
     ) -> list[dict[str, str]]:
         """Query chat history for a session."""
+
+    @abstractmethod
+    async def alert_was_dispatched(
+        self, issue_id: str, deployment_id: str, since: datetime
+    ) -> bool:
+        """Return whether an alert was dispatched for the issue since ``since``."""
+
+    @abstractmethod
+    async def record_alert_dispatch(
+        self, issue_id: str, deployment_id: str, dispatched_at: datetime
+    ) -> None:
+        """Persist the most recent dispatch time for an issue."""
+
+    @abstractmethod
+    async def clear_alert_dispatch(self, issue_id: str, deployment_id: str) -> None:
+        """Clear persisted dispatch state after an issue resolves."""
