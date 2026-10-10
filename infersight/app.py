@@ -31,19 +31,21 @@ def create_app(
     app.state.config = settings
     app.state.storage = storage
 
+    # Static files (React frontend build)
     if settings.server.static_dir:
         static_dir = Path(settings.server.static_dir).expanduser()
         if static_dir.is_dir():
             app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
+    # Operational endpoints — always public, no auth
     @app.get("/health", tags=["ops"])
     async def health() -> dict[str, str]:
-        """Return process health without requiring authentication."""
+        """Process health — used by container liveness probes."""
         return {"status": "ok"}
 
     @app.get("/ready", tags=["ops"])
     async def ready() -> dict[str, str]:
-        """Return readiness after confirming that storage is reachable."""
+        """Readiness — confirms storage is reachable."""
         backend: StorageBackend | None = app.state.storage
         if backend is None:
             raise HTTPException(
@@ -60,6 +62,7 @@ def create_app(
             ) from exc
         return {"status": "ready"}
 
+    # API v1 routers
     app.include_router(deployments_router)
     app.include_router(metrics_router)
     app.include_router(issues_router)
