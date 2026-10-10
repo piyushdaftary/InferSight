@@ -8,6 +8,11 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, status
 from fastapi.staticfiles import StaticFiles
 
+from infersight.api.routes.copilot import router as copilot_router
+from infersight.api.routes.deployments import router as deployments_router
+from infersight.api.routes.issues import router as issues_router
+from infersight.api.routes.metrics import router as metrics_router
+from infersight.api.routes.recommendations import router as recommendations_router
 from infersight.config import InferSightConfig
 from infersight.storage.base import StorageBackend
 
@@ -16,29 +21,31 @@ def create_app(
     config: InferSightConfig | None = None,
     storage: StorageBackend | None = None,
 ) -> FastAPI:
-    """Create the InferSight API application.
-
-    Authentication middleware is intentionally not attached here while both
-    API-key and OIDC authentication remain disabled by default. Health checks
-    always remain unauthenticated so container orchestrators can probe them.
-    """
+    """Create the InferSight API application."""
     settings = config or InferSightConfig()
-    app = FastAPI(title="InferSight", version="0.1.0")
+    app = FastAPI(
+        title="InferSight",
+        version="0.1.0",
+        description="Open-source intelligence layer for AI inference infrastructure",
+    )
+    app.state.config = settings
     app.state.storage = storage
 
+    # Static files (React frontend build)
     if settings.server.static_dir:
         static_dir = Path(settings.server.static_dir).expanduser()
         if static_dir.is_dir():
             app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
-    @app.get("/health")
+    # Operational endpoints — always public, no auth
+    @app.get("/health", tags=["ops"])
     async def health() -> dict[str, str]:
-        """Return process health without requiring authentication."""
+        """Process health — used by container liveness probes."""
         return {"status": "ok"}
 
-    @app.get("/ready")
+    @app.get("/ready", tags=["ops"])
     async def ready() -> dict[str, str]:
-        """Return readiness after confirming that storage is reachable."""
+        """Readiness — confirms storage is reachable."""
         backend: StorageBackend | None = app.state.storage
         if backend is None:
             raise HTTPException(
@@ -54,5 +61,12 @@ def create_app(
                 detail="Storage backend is unavailable",
             ) from exc
         return {"status": "ready"}
+
+    # API v1 routers
+    app.include_router(deployments_router)
+    app.include_router(metrics_router)
+    app.include_router(issues_router)
+    app.include_router(recommendations_router)
+    app.include_router(copilot_router)
 
     return app
