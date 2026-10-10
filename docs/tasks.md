@@ -290,33 +290,37 @@
 
 > Each notification plugin lives in `infersight/plugins/notifications/`. All must subclass `NotificationPlugin`. Failures must be logged but must NOT propagate exceptions (design §4.5).
 
-### Task 5.1 — Slack Notification Plugin (`notifications/slack.py`)
+### Task 5.1 — Slack Notification Plugin (`notifications/slack.py`) ✅ COMPLETE
 - Implement `SlackNotificationPlugin` that posts issue alerts to a Slack webhook URL configured via `alerting.channels.slack.webhook_url`
 - Format the message with severity emoji, deployment ID, issue description, and a link to the dashboard `/issues` page
 - Implement deduplication: track `(issue_id, deployment_id)` tuples and suppress re-notification within `alerting.deduplication_window_seconds`
 - **Complexity:** S
 - _Requirements: REQ-6.4.1, REQ-6.4.4_
+- **Status:** Complete. Webhook delivery includes severity, deployment, dashboard link, and failure isolation.
 
-### Task 5.2 — PagerDuty Notification Plugin (`notifications/pagerduty.py`)
+### Task 5.2 — PagerDuty Notification Plugin (`notifications/pagerduty.py`) ✅ COMPLETE
 - Implement `PagerDutyNotificationPlugin` using PagerDuty Events API v2 (`POST https://events.pagerduty.com/v2/enqueue`)
 - Map InferSight `Severity` to PagerDuty severity levels; use `issue_id + deployment_id` as the `dedup_key` for automatic PagerDuty deduplication
 - Send a `resolve` event when `issue.cleared_at` is set; handle API errors gracefully (log, don't raise)
 - **Complexity:** S
 - _Requirements: REQ-6.4.2_
+- **Status:** Complete. Events API v2 trigger and resolve events use stable deduplication keys.
 
-### Task 5.3 — Email (SMTP) Notification Plugin (`notifications/email.py`)
+### Task 5.3 — Email (SMTP) Notification Plugin (`notifications/email.py`) ✅ COMPLETE
 - Implement `EmailNotificationPlugin` using Python's `smtplib` / `aiosmtplib` with TLS support
 - Render a structured HTML email body with issue details; support `to_addresses` list from config
 - Respect `alerting.channels.email.severity_threshold`; handle SMTP auth errors gracefully and log them without exposing credentials
 - **Complexity:** S
 - _Requirements: REQ-6.4.3_
+- **Status:** Complete. SMTP email delivery with TLS and severity filtering is implemented.
 
-### Task 5.4 — Alert Routing + Deduplication Logic
+### Task 5.4 — Alert Routing + Deduplication Logic ✅ COMPLETE
 - Implement a central `AlertRouter` that dispatches `Issue` objects to configured `NotificationPlugin` instances based on severity thresholds and deployment filters from `alerting.channels.*`
 - Maintain an in-memory (and SQLite-persisted) deduplication state keyed on `(issue_id, deployment_id)` with TTL = `alerting.deduplication_window_seconds`
 - Write unit tests covering: correct routing by severity, deduplication within window, and re-alerting after window expiry
 - **Complexity:** M
 - _Requirements: REQ-6.4.4_
+- **Status:** Complete. Alert dispatches are deduplicated in memory and persisted by the SQLite backend.
 
 
 ---

@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 import sqlite3
 import threading
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -138,6 +138,18 @@ class SQLiteBackend(StorageBackend):
                 role TEXT NOT NULL,
                 content TEXT NOT NULL,
                 created_at TEXT NOT NULL
+            )
+            """
+        ):
+            pass
+
+        async with self._connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS alert_dispatches (
+                issue_id TEXT NOT NULL,
+                deployment_id TEXT NOT NULL,
+                dispatched_at TEXT NOT NULL,
+                PRIMARY KEY (issue_id, deployment_id)
             )
             """
         ):
@@ -444,6 +456,42 @@ class SQLiteBackend(StorageBackend):
                     messages.append({"role": row["role"], "content": row["content"]})
 
         return messages
+
+    async def alert_was_dispatched(
+        self, issue_id: str, deployment_id: str, since: datetime
+    ) -> bool:
+        """Return whether the issue was dispatched within the supplied time window."""
+        async with self._connection.execute(
+            """
+            SELECT 1 FROM alert_dispatches
+            WHERE issue_id = ? AND deployment_id = ? AND dispatched_at >= ?
+            """,
+            (issue_id, deployment_id, since.astimezone(UTC).isoformat()),
+        ) as cursor:
+            return await cursor.fetchone() is not None
+
+    async def record_alert_dispatch(
+        self, issue_id: str, deployment_id: str, dispatched_at: datetime
+    ) -> None:
+        """Record the latest notification time for an issue."""
+        async with self._connection.execute(
+            """
+            INSERT OR REPLACE INTO alert_dispatches (issue_id, deployment_id, dispatched_at)
+            VALUES (?, ?, ?)
+            """,
+            (issue_id, deployment_id, dispatched_at.astimezone(UTC).isoformat()),
+        ):
+            pass
+        await self._connection.commit()
+
+    async def clear_alert_dispatch(self, issue_id: str, deployment_id: str) -> None:
+        """Remove the dispatch record so a recurrence can notify immediately."""
+        async with self._connection.execute(
+            "DELETE FROM alert_dispatches WHERE issue_id = ? AND deployment_id = ?",
+            (issue_id, deployment_id),
+        ):
+            pass
+        await self._connection.commit()
 
     async def _cleanup_old_metrics(self) -> None:
         """Delete metrics older than retention_days."""
