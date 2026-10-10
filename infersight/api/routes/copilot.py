@@ -115,7 +115,7 @@ async def get_chat_history(
     return [ChatMessage(role=m["role"], content=m["content"]) for m in raw]
 
 
-@router.delete("/chat/{session_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/chat/{session_id}", status_code=status.HTTP_204_NO_CONTENT, response_model=None)
 async def clear_chat_session(
     session_id: str,
     request: Request,
